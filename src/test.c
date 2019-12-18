@@ -21,24 +21,6 @@ void handler(int singno){ // если программа работает сли
 	}
 }
 
-char *get_word(int fd) {
-    char *word = NULL, c = ' ';
-    while (c == ' ' || c == '\n') {
-        if (read(fd, &c, 1) <= 0)
-            return NULL;
-    }
-    int i = 0;
-    for (; c != ' ' && c != '\n'; i++) {
-        word = realloc(word, (i + 1) * sizeof(char));
-        word[i] = c;
-        if (read(fd, &c, 1) <= 0)
-            break;
-    }
-    word = realloc(word, (i + 1) * sizeof(char));
-    word[i] = '\0';
-    return word;
-}
-
 int createprogramm(char *prog){ // компиляция программы в папке tmp/username_programmname
 	char *name = malloc(6 * sizeof(char));
 	name[0] = '.';
@@ -149,6 +131,23 @@ char *makelog(){ // создает файл типа log : contest/log/username_
 	return name;
 }
 
+char *get_word(int fd) {
+    char *word = NULL, c = ' ';
+    while (c == ' ' || c == '\n') {
+        if (read(fd, &c, 1) <= 0)
+            return NULL;
+    }
+    int i = 0;
+    for (; c != ' ' && c != '\n'; i++) {
+        word = realloc(word, (i + 1) * sizeof(char));
+        word[i] = c;
+        if (read(fd, &c, 1) <= 0)
+            break;
+    }
+    word = realloc(word, (i + 1) * sizeof(char));
+    word[i] = '\0';
+    return word;
+}
 
 char checker_byte(int fd, int ans) {
 	char *word1, *word2;
@@ -179,14 +178,20 @@ char checker_byte(int fd, int ans) {
 
 char checker_int(int fd, int ans) {
 	char buf1, buf2;
-	while (read(ans, &buf1, sizeof(char)) > 0) {
-		if (read(fd, &buf2, sizeof(char)) < 0) {
-			return '-';
+	int quit1 = 0, quit2 = 0;
+	do {
+		quit1 = read(ans, &buf1, sizeof(char));
+		quit2 = read(fd, &buf2, sizeof(char));
+		while(buf1 == ' ' && quit1 != 0) {
+			quit1 = read(ans, &buf1, sizeof(char));
+		}
+		while(buf2 == ' ' && quit2 != 0) {
+			quit2 = read(fd, &buf2, sizeof(char));
 		}
 		if (buf1 != buf2) {
 			return '-';
 		}
-	}
+	} while (quit1 != 0 && quit2 != 0);
 	return '+';
 }
 
