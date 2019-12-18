@@ -2,9 +2,9 @@
 This program check and compares user's programs with right answers.\
 Tester include 4 directories:
 ##### ..* /contest: 
-... /code: where is kept user's codes.
-... /log: where is kept tester results.
-... /tests: where is kept answers and tests of problems.
+..* /code: where is kept user's codes.
+..* /log: where is kept tester results.
+..* /tests: where is kept answers and tests of problems.
 ##### ..* /src : where is kept the code of tester.
 ##### ..* /bin : where is kept tester program.
 ##### ..* /tmp : where is kept binary codes of user's codes.
