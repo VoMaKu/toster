@@ -1,5 +1,13 @@
 # Tester
-This program checks and compares users' programs with right answers.
+This program check and compares user's programs with right answers.\
+Tester include 4 directories:
+### ..* /contest: 
+... /code: where is kept user's codes. 
+... /log: where is kept tester results.
+... /tests: where is kept answers and tests of problems.
+### ..* /src : where is kept the code of tester.
+### ..* /bin : where is kept tester program.
+### ..* /tmp : where is kept binary codes of user's codes.
 ___
 ## For correctly work need:
 1. Create cfg files in code directory (*contest/code/user.cfg*) which contain the number of users
@@ -10,9 +18,9 @@ ___
 to compile a judge and test need to do this command : **make all**
 ___
 ## Start tester!
-**./bin/judge** if you want to check all users' programs\
+**./bin/judge** if you want to check all users' programs
 
-or\
+or
 
 **./bin/test contest/code/Kozhemyak contest/tests/A** if you want to check local user for a specific problem
 ___
