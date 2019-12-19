@@ -2,12 +2,12 @@
 This program check and compares user's programs with right answers.\
 Tester include 4 directories:
 * /contest: 
-+ /code: where is kept user's codes.
-+ /log: where is kept tester results.
-+ /tests: where is kept answers and tests of problems.
-* /src : where is kept the code of tester.
-* /bin : where is kept tester program.
-* /tmp : where is kept binary codes of user's codes.
++ /code: where user's codes are kept.
++ /log: where tester results are kept.
++ /tests: where answers and tests of problems are kept.
+* /src : where the code of tester is kept.
+* /bin : where tester program is kept.
+* /tmp : where binary codes of user's codes are kept.
 ___
 ## For correctly work need:
 1. Create cfg files in code directory (*contest/code/user.cfg*) which contain the number of users
