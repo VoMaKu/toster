@@ -27,6 +27,7 @@ ___
 ## contest/log
 All results are stored in *contest/log*.\
 Total result is in the results.log.\
+Time results is in the results2.log\
 Separate result is in the Kozhemyak_A.log.
 ___
 ## ENJOY
