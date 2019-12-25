@@ -1,0 +1,445 @@
+Wed Dec 25 10:16:44 2019 start test
+Wed Dec 25 10:16:44 2019 user: Aitassova, problem :A, tested :6
+Wed Dec 25 10:16:45 2019 ------
+Wed Dec 25 10:16:45 2019 accepted: 6, failed: 0
+Wed Dec 25 10:16:45 2019 stop test
+Wed Dec 25 10:16:45 2019 start test
+Wed Dec 25 10:16:45 2019 user: Aitassova, problem :B, tested :5
+Wed Dec 25 10:16:46 2019 -+---
+Wed Dec 25 10:16:46 2019 accepted: 5, failed: 0
+Wed Dec 25 10:16:46 2019 stop test
+Wed Dec 25 10:16:46 2019 start test
+Wed Dec 25 10:16:46 2019 user: Aitassova, problem :C, tested :5
+Wed Dec 25 10:16:46 2019 -----
+Wed Dec 25 10:16:46 2019 accepted: 5, failed: 0
+Wed Dec 25 10:16:46 2019 stop test
+Wed Dec 25 10:16:46 2019 start test
+Wed Dec 25 10:16:46 2019 user: Aitassova, problem :D, tested :6
+Wed Dec 25 10:16:50 2019 --xx--
+Wed Dec 25 10:16:50 2019 accepted: 4, failed: 2
+Wed Dec 25 10:16:50 2019 stop test
+Wed Dec 25 10:16:50 2019 start test
+Wed Dec 25 10:16:50 2019 user: Aitassova, problem :E, tested :5
+Wed Dec 25 10:16:50 2019 +++++
+Wed Dec 25 10:16:50 2019 accepted: 5, failed: 0
+Wed Dec 25 10:16:50 2019 stop test
+Wed Dec 25 10:16:50 2019 start test
+Wed Dec 25 10:16:50 2019 user: Aitassova, problem :F, tested :5
+Wed Dec 25 10:16:50 2019 -++++
+Wed Dec 25 10:16:50 2019 accepted: 5, failed: 0
+Wed Dec 25 10:16:50 2019 stop test
+Wed Dec 25 10:16:50 2019 start test
+Wed Dec 25 10:16:50 2019 user: Aitassova, problem :G, tested :5
+Wed Dec 25 10:16:50 2019 xxxxx
+Wed Dec 25 10:16:50 2019 accepted: 0, failed: 5
+Wed Dec 25 10:16:50 2019 stop test
+Wed Dec 25 10:16:50 2019 start test
+Wed Dec 25 10:16:50 2019 user: Aitassova, problem :H, tested :5
+Wed Dec 25 10:16:51 2019 +++++
+Wed Dec 25 10:16:51 2019 accepted: 5, failed: 0
+Wed Dec 25 10:16:51 2019 stop test
+Wed Dec 25 10:16:51 2019 start test
+Wed Dec 25 10:16:51 2019 user: Aitassova, problem :I, tested :5
+Wed Dec 25 10:16:51 2019 +++++
+Wed Dec 25 10:16:51 2019 accepted: 5, failed: 0
+Wed Dec 25 10:16:51 2019 stop test
+Wed Dec 25 10:16:51 2019 start test
+Wed Dec 25 10:16:51 2019 user: Aitassova, problem :J, tested :5
+Wed Dec 25 10:16:51 2019 +++++
+Wed Dec 25 10:16:51 2019 accepted: 5, failed: 0
+Wed Dec 25 10:16:51 2019 stop test
+Wed Dec 25 10:16:51 2019 start test
+Wed Dec 25 10:16:51 2019 user: Albek, problem :A, tested :6
+Wed Dec 25 10:16:51 2019 ++++++
+Wed Dec 25 10:16:51 2019 accepted: 6, failed: 0
+Wed Dec 25 10:16:51 2019 stop test
+Wed Dec 25 10:16:51 2019 start test
+Wed Dec 25 10:16:51 2019 user: Albek, problem :C, tested :5
+Wed Dec 25 10:16:51 2019 +++++
+Wed Dec 25 10:16:51 2019 accepted: 5, failed: 0
+Wed Dec 25 10:16:51 2019 stop test
+Wed Dec 25 10:16:51 2019 start test
+Wed Dec 25 10:16:51 2019 user: Albek, problem :F, tested :5
+Wed Dec 25 10:16:51 2019 -----
+Wed Dec 25 10:16:51 2019 accepted: 5, failed: 0
+Wed Dec 25 10:16:51 2019 stop test
+Wed Dec 25 10:16:51 2019 start test
+Wed Dec 25 10:16:51 2019 user: Albek, problem :H, tested :5
+Wed Dec 25 10:16:51 2019 +++++
+Wed Dec 25 10:16:51 2019 accepted: 5, failed: 0
+Wed Dec 25 10:16:51 2019 stop test
+Wed Dec 25 10:16:51 2019 start test
+Wed Dec 25 10:16:51 2019 user: Albek, problem :I, tested :5
+Wed Dec 25 10:16:51 2019 ++-++
+Wed Dec 25 10:16:51 2019 accepted: 5, failed: 0
+Wed Dec 25 10:16:51 2019 stop test
+Wed Dec 25 10:16:51 2019 start test
+Wed Dec 25 10:16:51 2019 user: Albek, problem :J, tested :5
+Wed Dec 25 10:16:52 2019 +++++
+Wed Dec 25 10:16:52 2019 accepted: 5, failed: 0
+Wed Dec 25 10:16:52 2019 stop test
+Wed Dec 25 10:16:52 2019 start test
+Wed Dec 25 10:16:52 2019 user: Alikhanov, problem :A, tested :6
+Wed Dec 25 10:16:52 2019 ++++++
+Wed Dec 25 10:16:52 2019 accepted: 6, failed: 0
+Wed Dec 25 10:16:52 2019 stop test
+Wed Dec 25 10:16:52 2019 start test
+Wed Dec 25 10:16:52 2019 user: Alikhanov, problem :B, tested :5
+Wed Dec 25 10:16:52 2019 ---+-
+Wed Dec 25 10:16:52 2019 accepted: 5, failed: 0
+Wed Dec 25 10:16:52 2019 stop test
+Wed Dec 25 10:16:52 2019 start test
+Wed Dec 25 10:16:52 2019 user: Alikhanov, problem :C, tested :5
+Wed Dec 25 10:16:52 2019 +++++
+Wed Dec 25 10:16:52 2019 accepted: 5, failed: 0
+Wed Dec 25 10:16:52 2019 stop test
+Wed Dec 25 10:16:52 2019 start test
+Wed Dec 25 10:16:52 2019 user: Alikhanov, problem :D, tested :6
+Wed Dec 25 10:16:52 2019 --+---
+Wed Dec 25 10:16:52 2019 accepted: 6, failed: 0
+Wed Dec 25 10:16:52 2019 stop test
+Wed Dec 25 10:16:52 2019 start test
+Wed Dec 25 10:16:52 2019 user: Alikhanov, problem :E, tested :5
+Wed Dec 25 10:16:52 2019 +++-+
+Wed Dec 25 10:16:52 2019 accepted: 5, failed: 0
+Wed Dec 25 10:16:52 2019 stop test
+Wed Dec 25 10:16:52 2019 start test
+Wed Dec 25 10:16:52 2019 user: Alikhanov, problem :F, tested :5
+Wed Dec 25 10:16:52 2019 -++++
+Wed Dec 25 10:16:52 2019 accepted: 5, failed: 0
+Wed Dec 25 10:16:52 2019 stop test
+Wed Dec 25 10:16:52 2019 start test
+Wed Dec 25 10:16:52 2019 user: Alikhanov, problem :G, tested :5
+Wed Dec 25 10:16:52 2019 +++-+
+Wed Dec 25 10:16:52 2019 accepted: 5, failed: 0
+Wed Dec 25 10:16:52 2019 stop test
+Wed Dec 25 10:16:52 2019 start test
+Wed Dec 25 10:16:52 2019 user: Alikhanov, problem :H, tested :5
+Wed Dec 25 10:16:53 2019 +++++
+Wed Dec 25 10:16:53 2019 accepted: 5, failed: 0
+Wed Dec 25 10:16:53 2019 stop test
+Wed Dec 25 10:16:53 2019 start test
+Wed Dec 25 10:16:53 2019 user: Alikhanov, problem :I, tested :5
+Wed Dec 25 10:16:53 2019 +++++
+Wed Dec 25 10:16:53 2019 accepted: 5, failed: 0
+Wed Dec 25 10:16:53 2019 stop test
+Wed Dec 25 10:16:53 2019 start test
+Wed Dec 25 10:16:53 2019 user: Alikhanov, problem :J, tested :5
+Wed Dec 25 10:16:53 2019 +++++
+Wed Dec 25 10:16:53 2019 accepted: 5, failed: 0
+Wed Dec 25 10:16:53 2019 stop test
+Wed Dec 25 10:16:53 2019 start test
+Wed Dec 25 10:16:53 2019 user: Kinzhitayev, problem :A, tested :6
+Wed Dec 25 10:16:53 2019 ++++++
+Wed Dec 25 10:16:53 2019 accepted: 6, failed: 0
+Wed Dec 25 10:16:53 2019 stop test
+Wed Dec 25 10:16:53 2019 start test
+Wed Dec 25 10:16:53 2019 user: Kinzhitayev, problem :B, tested :5
+Wed Dec 25 10:16:54 2019 +--+-
+Wed Dec 25 10:16:54 2019 accepted: 5, failed: 0
+Wed Dec 25 10:16:54 2019 stop test
+Wed Dec 25 10:16:54 2019 start test
+Wed Dec 25 10:16:54 2019 user: Kinzhitayev, problem :C, tested :5
+Wed Dec 25 10:16:54 2019 +++++
+Wed Dec 25 10:16:54 2019 accepted: 5, failed: 0
+Wed Dec 25 10:16:54 2019 stop test
+Wed Dec 25 10:16:54 2019 start test
+Wed Dec 25 10:16:54 2019 user: Kinzhitayev, problem :F, tested :5
+Wed Dec 25 10:16:54 2019 -++++
+Wed Dec 25 10:16:54 2019 accepted: 5, failed: 0
+Wed Dec 25 10:16:54 2019 stop test
+Wed Dec 25 10:16:54 2019 start test
+Wed Dec 25 10:16:54 2019 user: Kinzhitayev, problem :G, tested :5
+Wed Dec 25 10:16:55 2019 +++++
+Wed Dec 25 10:16:55 2019 accepted: 5, failed: 0
+Wed Dec 25 10:16:55 2019 stop test
+Wed Dec 25 10:16:55 2019 start test
+Wed Dec 25 10:16:55 2019 user: Kinzhitayev, problem :H, tested :5
+Wed Dec 25 10:16:59 2019 -+---
+Wed Dec 25 10:16:59 2019 accepted: 5, failed: 0
+Wed Dec 25 10:16:59 2019 stop test
+Wed Dec 25 10:16:59 2019 start test
+Wed Dec 25 10:16:59 2019 user: Kinzhitayev, problem :I, tested :5
+Wed Dec 25 10:17:04 2019 -----
+Wed Dec 25 10:17:04 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:04 2019 stop test
+Wed Dec 25 10:17:04 2019 start test
+Wed Dec 25 10:17:04 2019 user: Kinzhitayev, problem :J, tested :5
+Wed Dec 25 10:17:04 2019 +++++
+Wed Dec 25 10:17:04 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:04 2019 stop test
+Wed Dec 25 10:17:04 2019 start test
+Wed Dec 25 10:17:04 2019 user: Koshkarov, problem :A, tested :6
+Wed Dec 25 10:17:04 2019 +-++++
+Wed Dec 25 10:17:04 2019 accepted: 6, failed: 0
+Wed Dec 25 10:17:04 2019 stop test
+Wed Dec 25 10:17:04 2019 start test
+Wed Dec 25 10:17:04 2019 user: Koshkarov, problem :B, tested :5
+Wed Dec 25 10:17:05 2019 ---+-
+Wed Dec 25 10:17:05 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:05 2019 stop test
+Wed Dec 25 10:17:05 2019 start test
+Wed Dec 25 10:17:05 2019 user: Koshkarov, problem :D, tested :6
+Wed Dec 25 10:17:05 2019 --+---
+Wed Dec 25 10:17:05 2019 accepted: 6, failed: 0
+Wed Dec 25 10:17:05 2019 stop test
+Wed Dec 25 10:17:05 2019 start test
+Wed Dec 25 10:17:05 2019 user: Koshkarov, problem :E, tested :5
+Wed Dec 25 10:17:05 2019 +++-+
+Wed Dec 25 10:17:05 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:05 2019 stop test
+Wed Dec 25 10:17:05 2019 start test
+Wed Dec 25 10:17:05 2019 user: Koshkarov, problem :F, tested :5
+Wed Dec 25 10:17:05 2019 -----
+Wed Dec 25 10:17:05 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:05 2019 stop test
+Wed Dec 25 10:17:05 2019 start test
+Wed Dec 25 10:17:05 2019 user: Koshkarov, problem :H, tested :5
+Wed Dec 25 10:17:05 2019 +++++
+Wed Dec 25 10:17:05 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:05 2019 stop test
+Wed Dec 25 10:17:05 2019 start test
+Wed Dec 25 10:17:05 2019 user: Koshkarov, problem :I, tested :5
+Wed Dec 25 10:17:05 2019 +++++
+Wed Dec 25 10:17:05 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:05 2019 stop test
+Wed Dec 25 10:17:05 2019 start test
+Wed Dec 25 10:17:05 2019 user: Koshkarov, problem :J, tested :5
+Wed Dec 25 10:17:05 2019 +++++
+Wed Dec 25 10:17:05 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:05 2019 stop test
+Wed Dec 25 10:17:05 2019 start test
+Wed Dec 25 10:17:05 2019 user: Kozhemyak, problem :A, tested :6
+Wed Dec 25 10:17:05 2019 ++++++
+Wed Dec 25 10:17:05 2019 accepted: 6, failed: 0
+Wed Dec 25 10:17:05 2019 stop test
+Wed Dec 25 10:17:05 2019 start test
+Wed Dec 25 10:17:05 2019 user: Kozhemyak, problem :B, tested :5
+Wed Dec 25 10:17:05 2019 ---+-
+Wed Dec 25 10:17:05 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:05 2019 stop test
+Wed Dec 25 10:17:05 2019 start test
+Wed Dec 25 10:17:05 2019 user: Kozhemyak, problem :C, tested :5
+Wed Dec 25 10:17:06 2019 +++++
+Wed Dec 25 10:17:06 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:06 2019 stop test
+Wed Dec 25 10:17:06 2019 start test
+Wed Dec 25 10:17:06 2019 user: Kozhemyak, problem :D, tested :6
+Wed Dec 25 10:17:06 2019 --+---
+Wed Dec 25 10:17:06 2019 accepted: 6, failed: 0
+Wed Dec 25 10:17:06 2019 stop test
+Wed Dec 25 10:17:06 2019 start test
+Wed Dec 25 10:17:06 2019 user: Kozhemyak, problem :F, tested :5
+Wed Dec 25 10:17:06 2019 -++++
+Wed Dec 25 10:17:06 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:06 2019 stop test
+Wed Dec 25 10:17:06 2019 start test
+Wed Dec 25 10:17:06 2019 user: Kozhemyak, problem :G, tested :5
+Wed Dec 25 10:17:06 2019 +++++
+Wed Dec 25 10:17:06 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:06 2019 stop test
+Wed Dec 25 10:17:06 2019 start test
+Wed Dec 25 10:17:06 2019 user: Kozhemyak, problem :H, tested :5
+Wed Dec 25 10:17:06 2019 +++++
+Wed Dec 25 10:17:06 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:06 2019 stop test
+Wed Dec 25 10:17:06 2019 start test
+Wed Dec 25 10:17:06 2019 user: Kozhemyak, problem :I, tested :5
+Wed Dec 25 10:17:06 2019 +++++
+Wed Dec 25 10:17:06 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:06 2019 stop test
+Wed Dec 25 10:17:06 2019 start test
+Wed Dec 25 10:17:06 2019 user: Kozhemyak, problem :J, tested :5
+Wed Dec 25 10:17:06 2019 +++++
+Wed Dec 25 10:17:06 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:06 2019 stop test
+Wed Dec 25 10:17:06 2019 start test
+Wed Dec 25 10:17:06 2019 user: Moldakhmetova, problem :A, tested :6
+Wed Dec 25 10:17:06 2019 ------
+Wed Dec 25 10:17:06 2019 accepted: 6, failed: 0
+Wed Dec 25 10:17:06 2019 stop test
+Wed Dec 25 10:17:06 2019 start test
+Wed Dec 25 10:17:06 2019 user: Moldakhmetova, problem :C, tested :5
+Wed Dec 25 10:17:06 2019 +++++
+Wed Dec 25 10:17:06 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:06 2019 stop test
+Wed Dec 25 10:17:06 2019 start test
+Wed Dec 25 10:17:06 2019 user: Moldakhmetova, problem :D, tested :6
+Wed Dec 25 10:17:07 2019 --+---
+Wed Dec 25 10:17:07 2019 accepted: 6, failed: 0
+Wed Dec 25 10:17:07 2019 stop test
+Wed Dec 25 10:17:07 2019 start test
+Wed Dec 25 10:17:07 2019 user: Moldakhmetova, problem :E, tested :5
+Wed Dec 25 10:17:07 2019 xxxxx
+Wed Dec 25 10:17:07 2019 accepted: 0, failed: 5
+Wed Dec 25 10:17:07 2019 stop test
+Wed Dec 25 10:17:07 2019 start test
+Wed Dec 25 10:17:07 2019 user: Moldakhmetova, problem :F, tested :5
+Wed Dec 25 10:17:07 2019 -----
+Wed Dec 25 10:17:07 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:07 2019 stop test
+Wed Dec 25 10:17:07 2019 start test
+Wed Dec 25 10:17:07 2019 user: Moldakhmetova, problem :H, tested :5
+Wed Dec 25 10:17:07 2019 +++++
+Wed Dec 25 10:17:07 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:07 2019 stop test
+Wed Dec 25 10:17:07 2019 start test
+Wed Dec 25 10:17:07 2019 user: Moldakhmetova, problem :I, tested :5
+Wed Dec 25 10:17:07 2019 +++++
+Wed Dec 25 10:17:07 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:07 2019 stop test
+Wed Dec 25 10:17:07 2019 start test
+Wed Dec 25 10:17:07 2019 user: Moldakhmetova, problem :J, tested :5
+Wed Dec 25 10:17:07 2019 +++++
+Wed Dec 25 10:17:07 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:07 2019 stop test
+Wed Dec 25 10:17:07 2019 start test
+Wed Dec 25 10:17:07 2019 user: Murzabaev, problem :A, tested :6
+Wed Dec 25 10:17:07 2019 ++++++
+Wed Dec 25 10:17:07 2019 accepted: 6, failed: 0
+Wed Dec 25 10:17:07 2019 stop test
+Wed Dec 25 10:17:07 2019 start test
+Wed Dec 25 10:17:07 2019 user: Murzabaev, problem :B, tested :5
+Wed Dec 25 10:17:07 2019 ---+-
+Wed Dec 25 10:17:07 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:07 2019 stop test
+Wed Dec 25 10:17:07 2019 start test
+Wed Dec 25 10:17:07 2019 user: Murzabaev, problem :C, tested :5
+Wed Dec 25 10:17:08 2019 +++++
+Wed Dec 25 10:17:08 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:08 2019 stop test
+Wed Dec 25 10:17:08 2019 start test
+Wed Dec 25 10:17:08 2019 user: Murzabaev, problem :D, tested :6
+Wed Dec 25 10:17:08 2019 --+---
+Wed Dec 25 10:17:08 2019 accepted: 6, failed: 0
+Wed Dec 25 10:17:08 2019 stop test
+Wed Dec 25 10:17:08 2019 start test
+Wed Dec 25 10:17:08 2019 user: Murzabaev, problem :E, tested :5
+Wed Dec 25 10:17:08 2019 +++-+
+Wed Dec 25 10:17:08 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:08 2019 stop test
+Wed Dec 25 10:17:08 2019 start test
+Wed Dec 25 10:17:08 2019 user: Murzabaev, problem :F, tested :5
+Wed Dec 25 10:17:08 2019 -++++
+Wed Dec 25 10:17:08 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:08 2019 stop test
+Wed Dec 25 10:17:08 2019 start test
+Wed Dec 25 10:17:08 2019 user: Murzabaev, problem :G, tested :5
+Wed Dec 25 10:17:08 2019 +++-+
+Wed Dec 25 10:17:08 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:08 2019 stop test
+Wed Dec 25 10:17:08 2019 start test
+Wed Dec 25 10:17:08 2019 user: Murzabaev, problem :I, tested :5
+Wed Dec 25 10:17:08 2019 +++++
+Wed Dec 25 10:17:08 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:08 2019 stop test
+Wed Dec 25 10:17:08 2019 start test
+Wed Dec 25 10:17:08 2019 user: Murzabaev, problem :J, tested :5
+Wed Dec 25 10:17:08 2019 +++++
+Wed Dec 25 10:17:08 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:08 2019 stop test
+Wed Dec 25 10:17:08 2019 start test
+Wed Dec 25 10:17:08 2019 user: Selevenko, problem :A, tested :6
+Wed Dec 25 10:17:08 2019 ++++++
+Wed Dec 25 10:17:08 2019 accepted: 6, failed: 0
+Wed Dec 25 10:17:08 2019 stop test
+Wed Dec 25 10:17:08 2019 start test
+Wed Dec 25 10:17:08 2019 user: Selevenko, problem :B, tested :5
+Wed Dec 25 10:17:08 2019 -----
+Wed Dec 25 10:17:08 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:08 2019 stop test
+Wed Dec 25 10:17:08 2019 start test
+Wed Dec 25 10:17:08 2019 user: Selevenko, problem :C, tested :5
+Wed Dec 25 10:17:09 2019 +++++
+Wed Dec 25 10:17:09 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:09 2019 stop test
+Wed Dec 25 10:17:09 2019 start test
+Wed Dec 25 10:17:09 2019 user: Selevenko, problem :D, tested :6
+Wed Dec 25 10:17:09 2019 --+---
+Wed Dec 25 10:17:09 2019 accepted: 6, failed: 0
+Wed Dec 25 10:17:09 2019 stop test
+Wed Dec 25 10:17:09 2019 start test
+Wed Dec 25 10:17:09 2019 user: Selevenko, problem :E, tested :5
+Wed Dec 25 10:17:09 2019 +++-+
+Wed Dec 25 10:17:09 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:09 2019 stop test
+Wed Dec 25 10:17:09 2019 start test
+Wed Dec 25 10:17:09 2019 user: Selevenko, problem :F, tested :5
+Wed Dec 25 10:17:09 2019 --++-
+Wed Dec 25 10:17:09 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:09 2019 stop test
+Wed Dec 25 10:17:09 2019 start test
+Wed Dec 25 10:17:09 2019 user: Selevenko, problem :G, tested :5
+Wed Dec 25 10:17:09 2019 -----
+Wed Dec 25 10:17:09 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:09 2019 stop test
+Wed Dec 25 10:17:09 2019 start test
+Wed Dec 25 10:17:09 2019 user: Selevenko, problem :H, tested :5
+Wed Dec 25 10:17:09 2019 +++++
+Wed Dec 25 10:17:09 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:09 2019 stop test
+Wed Dec 25 10:17:09 2019 start test
+Wed Dec 25 10:17:09 2019 user: Selevenko, problem :I, tested :5
+Wed Dec 25 10:17:09 2019 +++++
+Wed Dec 25 10:17:09 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:09 2019 stop test
+Wed Dec 25 10:17:09 2019 start test
+Wed Dec 25 10:17:09 2019 user: Selevenko, problem :J, tested :5
+Wed Dec 25 10:17:09 2019 +++++
+Wed Dec 25 10:17:09 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:09 2019 stop test
+Wed Dec 25 10:17:09 2019 start test
+Wed Dec 25 10:17:09 2019 user: Stoletniy, problem :A, tested :6
+Wed Dec 25 10:17:10 2019 ++++++
+Wed Dec 25 10:17:10 2019 accepted: 6, failed: 0
+Wed Dec 25 10:17:10 2019 stop test
+Wed Dec 25 10:17:10 2019 start test
+Wed Dec 25 10:17:10 2019 user: Stoletniy, problem :B, tested :5
+Wed Dec 25 10:17:10 2019 ---+-
+Wed Dec 25 10:17:10 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:10 2019 stop test
+Wed Dec 25 10:17:10 2019 start test
+Wed Dec 25 10:17:10 2019 user: Stoletniy, problem :C, tested :5
+Wed Dec 25 10:17:10 2019 -----
+Wed Dec 25 10:17:10 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:10 2019 stop test
+Wed Dec 25 10:17:10 2019 start test
+Wed Dec 25 10:17:10 2019 user: Stoletniy, problem :D, tested :6
+Wed Dec 25 10:17:12 2019 x-+---
+Wed Dec 25 10:17:12 2019 accepted: 5, failed: 1
+Wed Dec 25 10:17:12 2019 stop test
+Wed Dec 25 10:17:12 2019 start test
+Wed Dec 25 10:17:12 2019 user: Stoletniy, problem :E, tested :5
+Wed Dec 25 10:17:12 2019 xxxxx
+Wed Dec 25 10:17:12 2019 accepted: 0, failed: 5
+Wed Dec 25 10:17:12 2019 stop test
+Wed Dec 25 10:17:12 2019 start test
+Wed Dec 25 10:17:12 2019 user: Stoletniy, problem :F, tested :5
+Wed Dec 25 10:17:12 2019 -++++
+Wed Dec 25 10:17:12 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:12 2019 stop test
+Wed Dec 25 10:17:12 2019 start test
+Wed Dec 25 10:17:12 2019 user: Stoletniy, problem :G, tested :5
+Wed Dec 25 10:17:12 2019 -----
+Wed Dec 25 10:17:12 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:12 2019 stop test
+Wed Dec 25 10:17:12 2019 start test
+Wed Dec 25 10:17:12 2019 user: Stoletniy, problem :H, tested :5
+Wed Dec 25 10:17:12 2019 ---++
+Wed Dec 25 10:17:12 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:12 2019 stop test
+Wed Dec 25 10:17:12 2019 start test
+Wed Dec 25 10:17:12 2019 user: Stoletniy, problem :I, tested :5
+Wed Dec 25 10:17:13 2019 +++++
+Wed Dec 25 10:17:13 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:13 2019 stop test
+Wed Dec 25 10:17:13 2019 start test
+Wed Dec 25 10:17:13 2019 user: Stoletniy, problem :J, tested :5
+Wed Dec 25 10:17:13 2019 +++++
+Wed Dec 25 10:17:13 2019 accepted: 5, failed: 0
+Wed Dec 25 10:17:13 2019 stop test
+Wed Dec 25 10:17:13 2019 start test
+Wed Dec 25 10:17:13 2019 user: Zhanmukanbetova, problem :A, tested :6
+Wed Dec 25 10:17:13 2019 ++++++
+Wed Dec 25 10:17:13 2019 accepted: 6, failed: 0
+Wed Dec 25 10:17:13 2019 stop test
