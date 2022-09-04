@@ -18,12 +18,12 @@ ___
 to compile a judge and test need to do this command : **make all**
 ___
 ## Start tester!
-**in '''bin''' directory** \
+**in ```bin``` **directory** \
 **./judge** if you want to check all users' programs
 
 or
 
-**in '''bin''' directory** \
+**in ```bin``` directory** \
 **./test ../contest/code/Kozhemyak/A.c ../contest/tests/A** if you want to check local user for a specific problem
 ___
 ## contest/log
