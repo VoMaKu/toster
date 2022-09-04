@@ -18,19 +18,19 @@ ___
 to compile a judge and test need to do this command : **make all**
 ___
 ## Start tester!
-**cd bin** \
+**in '''bin''' directory** \
 **./judge** if you want to check all users' programs
 
 or
 
-**cd bin** \
+**in '''bin''' directory** \
 **./test ../contest/code/Kozhemyak/A.c ../contest/tests/A** if you want to check local user for a specific problem
 ___
 ## contest/log
 All results are stored in *contest/log*.\
 Summary is in the results.log.\
 Time results is in the results2.log\
-Individual result is in the Kozhemyak_A.log.
+Individual result is in the your_name.log.
 ___
 ## ENJOY
 # ;D
