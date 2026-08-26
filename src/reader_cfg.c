@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include "reader_cfg.h"
 #include <stdio.h>
 #include <stdlib.h>
 

@@ -9,7 +9,7 @@
 #include <time.h>
 #include <fcntl.h>
 //#include "reader_xml.h"
-//#include "reader_cfg.h"
+#include "reader_cfg.h"
 //#include "reader_json.h"
 //#include "logger.h"
 //#include "writer_csv.h"

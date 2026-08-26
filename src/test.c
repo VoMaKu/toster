@@ -14,14 +14,14 @@ int num = 0, mode = 0, flag = 0;
 char *programm;
 pid_t child;
 
-void handler(int singno){ // если программа работает слишком долго то убивает ее
+void handler(int singno){ // kills the submission once it has been running for too long
 	if (child != 0) {
 		kill(child, SIGKILL);
 		flag = 1;
 	}
 }
 
-int createprogramm(char *prog){ // компиляция программы в папке tmp/username_programmname
+int createprogramm(char *prog){ // compiles the submission into tmp/Student_Letter
 	char *name = malloc(6 * sizeof(char));
 	name[0] = '.';
 	name[1] = '.';
@@ -30,7 +30,7 @@ int createprogramm(char *prog){ // компиляция программы в п
 	name[4] = 'm';
 	name[5] = 'p';
 	int size = 6;
-	for (int i = 0, fl = 0; fl != 4; i++) { // ищем username в  ../contest/code/username/programmname
+	for (int i = 0, fl = 0; fl != 4; i++) { // pull the student's name out of ../contest/code/Student/Letter.c
 		if (prog[i] == '/') {
 			fl++;
 		}
@@ -41,7 +41,7 @@ int createprogramm(char *prog){ // компиляция программы в п
 	}
 	name = realloc(name, (size + 3) * sizeof(char));
 	name[size] = '_';
-	name[size + 1] = prog[strlen(prog) - 3]; // ищем programmname
+	name[size + 1] = prog[strlen(prog) - 3]; // the problem letter: third character from the end of "A.c"
 	name[size + 2] = '\0';
 	size += 5;
 	programm = malloc((size) * sizeof(char));
@@ -51,7 +51,7 @@ int createprogramm(char *prog){ // компиляция программы в п
 		programm[i] = name[i - 2];
 	}
 	pid_t pid;
-	if ((pid = fork()) == 0) { //  компилируем программу 
+	if ((pid = fork()) == 0) { // compile it
 		if (execlp("gcc", "gcc", prog, "-o", name, NULL) < 0) {
 			perror("execlp error");
 			free(name);
@@ -69,7 +69,7 @@ int createprogramm(char *prog){ // компиляция программы в п
 	return 0;
 }
 
-struct dirent *foundproblemcfg(DIR *test){ // поиск файла problem.cfg
+struct dirent *foundproblemcfg(DIR *test){ // finds problem.cfg inside the problem's directory
 	struct dirent *problem = readdir(test);
 	while (strcmp(problem -> d_name, "problem.cfg") != 0) {
 		problem = readdir(test);
@@ -89,8 +89,8 @@ char *makecfg(char *ptr1, char *ptr2) {
 	return name;
 }
 
-void readcfg(int cfg){ // то что нужно поменять, считывает problem.cfg в каждой из папки программы 
-	char buf = 'F'; //эта функция сама по себе КОСТЫЛЬ!!!
+void readcfg(int cfg){ // reads one problem's problem.cfg; the part most worth rewriting
+	char buf = 'F'; // the whole function is a hack: it scans for '=' and '_' instead of parsing
 	while (buf != '=') {
 		if (read(cfg, &buf, sizeof(char)) < 0){
 			perror("read error");
@@ -123,7 +123,7 @@ void readcfg(int cfg){ // то что нужно поменять, считыв�
 	}
 }
 
-char *makelog(){ // создает файл типа log : contest/log/username_programmname.log
+char *makelog(){ // builds contest/log/Student_Letter.log
 	int size = strlen(programm) - 6;
 	char *name = calloc(size + 15 + 5, sizeof(char));
 	sprintf(name, "../contest/log/%s.log\0", programm + 9);
@@ -196,10 +196,10 @@ char checker_int(int fd, int ans) {
 }
 
 void checker(int log, char *argv) {
-	for (int i = 0; i < num; i++) { // тестируем на всех тестах
-		int fd[2]; // pipe 
+	for (int i = 0; i < num; i++) { // run the submission on every test of the problem
+		int fd[2]; // pipe: the submission's stdout comes back through it
 		pipe(fd);
-		char data[27], answer[27];	//на каком тесте
+		char data[27], answer[27];	// paths of the current test's input and expected answer
 		memset(data, 0, 27);
 		memset(answer, 0, 27);
 		sprintf(data, "../contest/tests/%c/%03d.dat",programm[strlen(programm) - 1], i + 1);
