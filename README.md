@@ -106,15 +106,12 @@ recorded as `x`.
 
 ## Known issues
 
-- **`./judge` crashes on the first student.** `usr_name` reads one directory
-  entry before its loop and then skips as many entries as the student's index,
-  so for index 0 the loop never runs and the function returns that first entry —
-  `.` — as a name. The judge then tries to compile `../contest/code/./Aitassova`,
-  a directory, and dies with SIGSEGV. The same off-by-one shifts every other
-  student by one place and never reaches the last one. `usr_name` also allocates
-  `strlen(name)` bytes with no room for the terminator.
 - The binaries committed in `bin/` are Linux ELF built in 2019 and cannot run on
   macOS; `make all` rebuilds them for the current machine.
+- Four marks out of 110 differ from the scoreboard recorded in 2019 — three
+  students, problems A and E and I. The judge itself is deterministic, so the
+  difference comes from the submissions behaving differently under a modern
+  compiler, or from the two-second limit landing differently on today's hardware.
 - Rows in the scoreboard follow the order the filesystem returns directories in,
   not the order in `user.cfg`.
 

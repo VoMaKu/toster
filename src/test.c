@@ -84,8 +84,8 @@ struct dirent *foundproblemcfg(DIR *test){ // finds problem.cfg inside the probl
 char *makecfg(char *ptr1, char *ptr2) {
 	int size1 = strlen(ptr1);
 	int size2 = strlen(ptr2);
-	char *name = malloc((size1 + 1 + size2 + 1) * sizeof(char));
-	sprintf(name, "../contest/tests/%c/%s\0", ptr2[size2 - 1], ptr1);
+	char *name = malloc(17 + 1 + 1 + size1 + 1); // "../contest/tests/" + letter + '/' + name + terminator
+	sprintf(name, "../contest/tests/%c/%s", ptr2[size2 - 1], ptr1);
 	return name;
 }
 
@@ -126,7 +126,7 @@ void readcfg(int cfg){ // reads one problem's problem.cfg; the part most worth r
 char *makelog(){ // builds contest/log/Student_Letter.log
 	int size = strlen(programm) - 6;
 	char *name = calloc(size + 15 + 5, sizeof(char));
-	sprintf(name, "../contest/log/%s.log\0", programm + 9);
+	sprintf(name, "../contest/log/%s.log", programm + 9);
 	printf("%s\n", name);
 	return name;
 }
@@ -259,10 +259,12 @@ int main(int argc, char **argv){
 	if (compile_programm != 1) {	
 		DIR *test = opendir(argv[2]);
 		struct dirent *problem = foundproblemcfg(test); 
+		char *cfg_path = makecfg(problem -> d_name, argv[2]); // closedir frees what readdir returned, so build the path first
 		closedir(test);
-		int cfg = open(makecfg(problem -> d_name, argv[2]), O_RDONLY);
+		int cfg = open(cfg_path, O_RDONLY);
 		readcfg(cfg);
 		close(cfg);
+		free(cfg_path);
 	}
 	char *name_log = makelog();
 	int log = open(name_log, O_WRONLY | O_CREAT | O_TRUNC, 0644);

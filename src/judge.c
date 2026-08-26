@@ -21,7 +21,7 @@ char ***read_conf(char* where, char ***setting) {
         if (strcmp(cfg -> d_name, "user.cfg") == 0
            || strcmp(cfg -> d_name, "problem.cfg") == 0) {
            	char *name = malloc(strlen(where) + 1 + strlen(cfg -> d_name) + 1);
-            sprintf(name, "%s/%s\0", where, cfg -> d_name);
+            sprintf(name, "%s/%s", where, cfg -> d_name);
             setting = get_cfgs(name);
             free(name);
             break;
@@ -42,25 +42,27 @@ char ***read_conf(char* where, char ***setting) {
 
 char *usr_name(int users) {
     DIR *path = opendir("../contest/code");
-    struct dirent *user = readdir(path);
-    if (user == NULL) {
+    if (path == NULL) {
         perror("DIR code doesn't exist");
         return NULL;
     }
-    int i = 0;
-    while (i < users) {
+    struct dirent *user = NULL;
+    int i = -1;
+    while (i < users) { // count the submission directories only: ".", ".." and user.cfg are not students
         user = readdir(path);
         if (user == NULL) {
             perror("DIR user doesn't exist");
+            closedir(path);
             return NULL;
         }
         if (user -> d_name[0] == '.' || strcmp(user -> d_name, "user.cfg") == 0) {
             continue;
         }
         i++;
-    }   
-    char *name = malloc(strlen(user -> d_name) * sizeof(char));
-    sprintf(name, "%s", user -> d_name); 
+    }
+    char *name = malloc(strlen(user -> d_name) + 1); // + 1 for the terminator sprintf writes
+    sprintf(name, "%s", user -> d_name);
+    closedir(path);
     return name;
 }
 
@@ -84,7 +86,7 @@ char *make_fst_argv(char *users, int problems){
 		}
 	}
 	name = realloc(name, strlen(name) + 1 + strlen(problem -> d_name) + 1);
-	sprintf(name, "../contest/code/%s/%s\0", users, problem -> d_name);
+	sprintf(name, "../contest/code/%s/%s", users, problem -> d_name);
 	printf("%s\n", name);
 	return name;
 }
@@ -255,6 +257,10 @@ int test(char ***setting, int user, int prob, int fd, int fd2) {
 					done = read(pipe_fd[0], &flag, 1);
 				}
 			}
+			if (j == 0) { // the runner said nothing at all — that is a missing result, not a pass
+				answer = 'X';
+			}
+			info = (char *)realloc(info, j + 1); // room for the terminator; also covers the case of no output at all, where info is still NULL
 			info[j] = '\0';
 			tmp_log_wr[0] = answer;
 			write(fd, tmp_log_wr, 4);
