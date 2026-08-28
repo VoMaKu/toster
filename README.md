@@ -102,16 +102,44 @@ Two comparisons are available, chosen per problem by the `checker=` line:
 
 Each run gets two seconds. `test` arms `alarm(2)` before starting the
 submission and kills it with `SIGKILL` when the alarm fires; the test is then
-recorded as `x`.
+recorded as `x`. The alarm is armed before the `fork`, so those two seconds
+cover starting the process as well as running it.
+
+## Differences from the 2019 scoreboard
+
+`contest/log/` still holds the logs of the 2019 run. Replaying the same contest
+today does not reproduce them exactly.
+
+Two marks differ because of how a failed build used to be recorded. `test`
+compiles a submission with plain `gcc` and no `-lm`. On the Linux of 2019 that
+failed to link any submission that actually called a libm function, and exactly
+two did: `Kozhemyak/E.c` calls `pow`, `Selevenko/E.c` calls `sqrt`. Every other
+submission that includes `math.h` either calls nothing from it or only `fabs`,
+which the compiler expands inline. The judge did not notice the failure — it
+treated only exit code 88, the code its own `execlp` uses, as a failure to
+build, so an ordinary `gcc` exit of 1 passed for success. `execlp` then could
+not find the binary that was never produced, and every test was recorded as
+`x`, which reads as a wrong answer rather than as a submission that does not
+compile. macOS carries libm inside libSystem, so both link, run, and pass.
+
+That path now reports `X`, which moves one further mark: `Albek_G` was `-` and
+is now `X`. That submission uses two variables its function never declares and
+has never compiled on any compiler.
+
+Two more marks differ because the submissions themselves read memory they never
+wrote — glibc happened to leave it zeroed and macOS does not. `Selevenko/A.c`
+never terminates its first buffer before handing it to `strcmp`, and
+`Koshkarov/I.c` writes its terminator one byte past the end of the string,
+leaving the last byte uninitialised.
+
+The scoreboard is also not perfectly repeatable, because the two-second limit
+covers starting the process as well as running it. On a loaded machine, or the
+first time a freshly compiled binary is executed, a correct submission can be
+killed and recorded as `x`. That was seen once, on `Stoletniy_A`, in the first
+of five runs.
 
 ## Known issues
 
-- The binaries committed in `bin/` are Linux ELF built in 2019 and cannot run on
-  macOS; `make all` rebuilds them for the current machine.
-- Four marks out of 110 differ from the scoreboard recorded in 2019 — three
-  students, problems A and E and I. The judge itself is deterministic, so the
-  difference comes from the submissions behaving differently under a modern
-  compiler, or from the two-second limit landing differently on today's hardware.
 - Rows in the scoreboard follow the order the filesystem returns directories in,
   not the order in `user.cfg`.
 
@@ -128,5 +156,7 @@ recorded as `x`.
   checker named otherwise is silently ignored.
 - The pass and fail counters in `results2.log` are single characters, so a
   problem with more than nine tests prints punctuation instead of a count.
-- Only `.cfg` is implemented. `judge.c` still has the branches for `user.xml`
-  and `user.json`, with the readers commented out.
+- A test that crashes or runs out of time is written to the per-submission log
+  twice, so those logs hold two characters for one test. The scoreboard is
+  unaffected: it reads the run's output, not the log.
+- Only `.cfg` is understood. There is no reader for any other format.

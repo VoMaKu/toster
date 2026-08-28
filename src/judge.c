@@ -8,14 +8,14 @@
 #include <sys/stat.h>
 #include <time.h>
 #include <fcntl.h>
-//#include "reader_xml.h"
 #include "reader_cfg.h"
-//#include "reader_json.h"
-//#include "logger.h"
-//#include "writer_csv.h"
 
 char ***read_conf(char* where, char ***setting) {
     DIR *_cfg = opendir(where);
+    if (_cfg == NULL) { // without this the readdir below dereferences a null directory handle
+        perror(where);
+        return NULL;
+    }
     struct dirent *cfg = readdir(_cfg);
 	while(cfg != NULL){
         if (strcmp(cfg -> d_name, "user.cfg") == 0
@@ -25,19 +25,18 @@ char ***read_conf(char* where, char ***setting) {
             setting = get_cfgs(name);
             free(name);
             break;
-        } else if (strcmp(cfg -> d_name, "user.xml") == 0
-        || strcmp(cfg -> d_name, "problem.xml") == 0 ){
-//            setting = reader_xml(cfg -> d_name);
-            break;
-        } else if (strcmp(cfg -> d_name, "user.json") == 0
-            || strcmp(cfg -> d_name, "problem.json") == 0 ){
-//            setting = reader_json(cfg -> d_name);
-            break;
         }
         cfg = readdir(_cfg);
     }
 	closedir(_cfg);
 	return setting;
+}
+
+char *cfg_value(char ***cfg, int row) { // a blank or malformed line gives a short row, and its missing value would be read as a null pointer
+    if (cfg == NULL || cfg[row] == NULL || cfg[row][0] == NULL || cfg[row][1] == NULL) {
+        return NULL;
+    }
+    return cfg[row][1];
 }
 
 char *usr_name(int users) {
@@ -266,7 +265,11 @@ int test(char ***setting, int user, int prob, int fd, int fd2) {
 			write(fd, tmp_log_wr, 4);
 			write(fd2, tttime, strlen(tttime) - 1);
 			write(fd2, " user: ", 7);
-			write(fd2, setting[user + 1][1], strlen(setting[user + 1][1]));
+			char *log_name = cfg_value(setting, user + 1); // user.cfg may be shorter than the number of submission directories
+			if (log_name == NULL) {
+				log_name = correct_usr;
+			}
+			write(fd2, log_name, strlen(log_name));
 			write(fd2, ", problem :", 11);
 			char pr = 'A' + i;
 			write(fd2, &pr, sizeof(char));
@@ -323,7 +326,14 @@ int main(int argc, char** argv) {
     char ***setting = NULL, ***problems = NULL;
     setting = read_conf("../contest/code", setting);
     problems = read_conf("../contest/tests", problems);
-    int problem = atoi(problems[0][1]), users = atoi(setting[0][1]);
+    char *problem_count = cfg_value(problems, 0), *user_count = cfg_value(setting, 0);
+    if (problem_count == NULL || user_count == NULL) {
+        fprintf(stderr, "the first line of user.cfg or problem.cfg carries no count\n");
+        free_cfgs(setting);
+        free_cfgs(problems);
+        return -1;
+    }
+    int problem = atoi(problem_count), users = atoi(user_count);
     int log = open("../contest/log/results.log", O_CREAT | O_WRONLY | O_TRUNC, 0644);
     int log2 = open("../contest/log/results2.log", O_CREAT | O_WRONLY | O_TRUNC, 0644);
     char tmp_log_wr[20] = "    users/problems  ";

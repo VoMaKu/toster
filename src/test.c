@@ -61,7 +61,8 @@ int createprogramm(char *prog){ // compiles the submission into tmp/Student_Lett
 	else {
 		int status;
 		wait(&status);
-		if (WEXITSTATUS(status) == 88) {
+		if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) { // gcc refusing to build the submission is a failure to compile, not a run to score
+			free(name);
 			return 1;
 		}
 		free(name);
@@ -218,7 +219,7 @@ void checker(int log, char *argv) {
 		} else {
 			int status;
 			wait(&status);
-			if (WEXITSTATUS(status) != 0) {
+			if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) { // a submission killed by a signal leaves no exit status of its own
 				flag = 1;
 			}
 			alarm(0);
