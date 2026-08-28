@@ -9,7 +9,7 @@ in one sitting.
 
 ```
 src/       judge.c, test.c, reader_cfg.c — the sources
-bin/       the two built programs, and the directory the judge runs from
+bin/       the directory the judge runs from; `make all` builds into it
 contest/
   code/    one directory per student: contest/code/Ivanov/A.c
   tests/   one directory per problem: contest/tests/A/001.dat, 001.ans, ...
