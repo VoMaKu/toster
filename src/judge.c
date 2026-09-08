@@ -24,6 +24,8 @@ typedef struct {
 	char *marks;
 	int count;
 	char mark;
+	int passed;  /* tests this submission got right */
+	int score;   /* what those tests are worth */
 } Job;
 
 typedef struct {
@@ -39,6 +41,18 @@ static void wr(int fd, const char *str) {
 static void wr_time(int fd, time_t when) {
 	char *text = ctime(&when);
 	write(fd, text, strlen(text) - 1); // ctime ends in a newline of its own
+}
+
+static void wr_wide(int fd, const char *text) { // right aligned over a column of numbers
+	char cell[16];
+	snprintf(cell, sizeof(cell), "%7s", text);
+	wr(fd, cell);
+}
+
+static void wr_number(int fd, int number) {
+	char cell[24];
+	snprintf(cell, sizeof(cell), "%7d", number); // wider than the column when it has to be, rather than cut
+	wr(fd, cell);
 }
 
 static void wr_cell(int fd, char mark) {
@@ -204,6 +218,10 @@ static void write_trace(int log2, const char *student, char letter, const Job *j
 		wr(log2, line);
 	}
 	wr_time(log2, job->stopped);
+	char scored[64];
+	snprintf(scored, sizeof(scored), " scored: %d\n", job->score);
+	wr(log2, scored);
+	wr_time(log2, job->stopped);
 	wr(log2, " stop test\n");
 }
 
@@ -277,18 +295,22 @@ int main(int argc, char **argv) {
 	char *runner = runner_path(argv[0]);
 	char *results = contest_path(contest, "log/results.log");
 	char *results2 = contest_path(contest, "log/results2.log");
+	char *table = contest_path(contest, "log/scores.log");
 	int log = results == NULL ? -1 : open(results, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	int log2 = results2 == NULL ? -1 : open(results2, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-	if (log < 0 || log2 < 0) { // without this the whole run writes into fd -1 and reports nothing at all
-		perror(log < 0 ? results : results2);
+	int scores = table == NULL ? -1 : open(table, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	if (log < 0 || log2 < 0 || scores < 0) { // without this the whole run writes into fd -1 and reports nothing at all
+		perror(log < 0 ? results : log2 < 0 ? results2 : table);
 		free(results);
 		free(results2);
+		free(table);
 		free(runner);
 		contest_free(contest);
 		return -1;
 	}
 	free(results);
 	free(results2);
+	free(table);
 
 	int *present = calloc(contest->users_count, sizeof(int));
 	Job *jobs = calloc(contest->users_count * contest->problems_count, sizeof(Job));
@@ -306,26 +328,50 @@ int main(int argc, char **argv) {
 	}
 	int status = run_jobs(contest, runner, jobs, count, workers);
 
+	for (int i = 0; i < count; i++) { // scored before anything is written, because the trace carries the score too
+		Problem *problem = &contest->problems[jobs[i].problem];
+		for (int k = 0; k < jobs[i].count; k++) {
+			if (jobs[i].marks[k] == '+') {
+				jobs[i].passed++;
+			}
+		}
+		jobs[i].score = problem->tests > 0 ? problem->points * jobs[i].passed / problem->tests : 0;
+	}
+
 	char header[COLUMN];
 	memcpy(header, "    users/problems  ", COLUMN); // exactly the width of the name column, so it carries no terminator
 	write(log, header, COLUMN);
+	write(scores, header, COLUMN);
 	for (int i = 0; i < contest->problems_count; i++) {
+		char letter[2] = { contest->problems[i].letter, '\0' };
 		wr_cell(log, contest->problems[i].letter);
+		wr_wide(scores, letter);
 	}
+	wr_wide(log, "total");
+	wr_wide(scores, "total");
 	wr(log, "\n");
+	wr(scores, "\n");
 	int at = 0;
 	for (int user = 0; user < contest->users_count; user++) {
 		write_name(log, contest->users[user]);
+		write_name(scores, contest->users[user]);
+		int total = 0;
 		for (int problem = 0; problem < contest->problems_count; problem++) {
 			if (!present[user]) {
 				wr_cell(log, 'X');
+				wr_number(scores, 0);
 				continue;
 			}
 			wr_cell(log, jobs[at].mark);
+			wr_number(scores, jobs[at].score);
+			total += jobs[at].score;
 			write_trace(log2, contest->users[user], contest->problems[problem].letter, &jobs[at]);
 			at++;
 		}
+		wr_number(log, total);
+		wr_number(scores, total);
 		wr(log, "\n");
+		wr(scores, "\n");
 	}
 	for (int i = 0; i < count; i++) {
 		free(jobs[i].marks);
@@ -334,6 +380,7 @@ int main(int argc, char **argv) {
 	free(present);
 	close(log);
 	close(log2);
+	close(scores);
 	free(runner);
 	contest_free(contest);
 	return status;

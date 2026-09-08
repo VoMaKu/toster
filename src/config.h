@@ -14,6 +14,7 @@ typedef struct {
 	char letter;
 	int tests;
 	char *checker;  /* "checker_byte", "checker_int", or a path under the contest directory */
+	int points;     /* what the whole problem is worth, shared out over its tests */
 	int seconds;    /* time one test gets */
 	long memory;    /* bytes one test gets; 0 leaves memory unlimited */
 } Problem;

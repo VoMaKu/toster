@@ -315,6 +315,7 @@ static int load_problems(Contest *contest) {
 		problem->letter = 'A' + i;
 		problem->seconds = 2;   // what the limit was when it was compiled in
 		problem->memory = 0;    // no limit unless the problem asks for one
+		problem->points = 100;
 		char *problem_path = contest_path(contest, "tests/%c/problem.cfg", problem->letter);
 		char ***one = problem_path == NULL ? NULL : get_cfgs(problem_path);
 		if (one == NULL) {
@@ -325,6 +326,7 @@ static int load_problems(Contest *contest) {
 		char *checker = cfg_lookup(one, "checker");
 		char *seconds = cfg_lookup(one, "time");
 		char *memory = cfg_lookup(one, "memory");
+		char *points = cfg_lookup(one, "points");
 		if (tests == NULL || atoi(tests) <= 0) {
 			fprintf(stderr, "%s: no tests= count\n", problem_path);
 			free_cfgs(one);
@@ -338,6 +340,9 @@ static int load_problems(Contest *contest) {
 		}
 		if (memory != NULL) {
 			problem->memory = atol(memory) * 1024 * 1024;
+		}
+		if (points != NULL) {
+			problem->points = atoi(points);
 		}
 		free_cfgs(one);
 		free(problem_path);
@@ -423,6 +428,10 @@ static int json_to_contest(Contest *contest, Json *root, const char *path) {
 	Json *problems = json_get(root, "problems");
 	Json *languages = json_get(root, "languages");
 	Json *sandbox = json_get(root, "sandbox");
+	if (sandbox != NULL && json_string(sandbox) == NULL) {
+		fprintf(stderr, "%s: \"sandbox\" takes \"on\", \"off\" or \"auto\"\n", path);
+		return -1;
+	}
 	if (sandbox != NULL && read_sandbox_wish(json_string(sandbox), &contest->sandbox) != 0) {
 		return -1;
 	}
@@ -462,6 +471,7 @@ static int json_to_contest(Contest *contest, Json *root, const char *path) {
 		problem->checker = path_fmt("%s", checker == NULL ? "checker_byte" : checker);
 		problem->seconds = json_int(json_get(one, "time"), 2);
 		problem->memory = json_int(json_get(one, "memory"), 0) * 1024 * 1024;
+		problem->points = json_int(json_get(one, "points"), 100);
 		if (problem->tests <= 0) {
 			fprintf(stderr, "%s: problem %c carries no test count\n", path, problem->letter);
 			return -1;
