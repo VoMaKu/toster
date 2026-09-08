@@ -11,6 +11,23 @@
 static int contest_load_json(Contest *contest, const char *path);
 char *cfg_lookup(char ***cfg, const char *key);
 
+/* checker_byte and checker_int are compiled in; anything else has to be a
+   program under the contest directory. Checked here, because a checker that
+   is not there would otherwise mark every test wrong without a word. */
+static int checker_exists(Contest *contest, const Problem *problem) {
+	if (strcmp(problem->checker, "checker_byte") == 0 || strcmp(problem->checker, "checker_int") == 0) {
+		return 0;
+	}
+	char *path = contest_path(contest, "%s", problem->checker);
+	int found = path != NULL && access(path, X_OK) == 0;
+	if (!found) {
+		fprintf(stderr, "problem %c names the checker %s, and there is no such program\n",
+			problem->letter, problem->checker);
+	}
+	free(path);
+	return found ? 0 : -1;
+}
+
 int sandbox_available(void) {
 	return access(SANDBOX_EXEC, X_OK) == 0;
 }
@@ -346,6 +363,9 @@ static int load_problems(Contest *contest) {
 		}
 		free_cfgs(one);
 		free(problem_path);
+		if (checker_exists(contest, problem) != 0) {
+			return -1;
+		}
 	}
 	return 0;
 }
@@ -474,6 +494,9 @@ static int json_to_contest(Contest *contest, Json *root, const char *path) {
 		problem->points = json_int(json_get(one, "points"), 100);
 		if (problem->tests <= 0) {
 			fprintf(stderr, "%s: problem %c carries no test count\n", path, problem->letter);
+			return -1;
+		}
+		if (checker_exists(contest, problem) != 0) {
 			return -1;
 		}
 	}
