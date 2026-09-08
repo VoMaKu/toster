@@ -1,0 +1,5 @@
+#!/bin/sh
+# close_enough <test> <output> <answer> — accepts anything within one
+out=$(cat "$2") || exit 1
+ans=$(cat "$3") || exit 1
+[ "$out" -ge $((ans - 1)) ] && [ "$out" -le $((ans + 1)) ]

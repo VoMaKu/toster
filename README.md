@@ -31,6 +31,24 @@ To mark a contest of your own, point the judge at it:
 ./bin/judge -j 0 path/to/contest
 ```
 
+## Tests
+
+```sh
+make check
+```
+
+runs the judge twice over. Once against the contest of 2019, whose scoreboard
+is kept in `test/expected/` and has to come back unchanged. Once against a
+small contest in `test/contest/` written to exercise the rest: three
+languages, a submission that never stops, a checker of a problem's own,
+partial credit, a submission that tries to read the answers out of the
+contest, `-j 0` against `-j 1`, `contest.json` against the `.cfg` files, and
+what the judge says when a contest is malformed.
+
+A check the system cannot support is skipped rather than failed — the memory
+limit on macOS, say. Nothing is written inside the repository except
+`contest/log`, which a run rewrites anyway.
+
 ## How a contest is laid out
 
 ```

@@ -13,7 +13,10 @@ bin/judge: src/judge.c $(SOURCES) $(HEADERS)
 	mkdir -p bin contest/log contest/tmp
 	$(CC) $(CFLAGS) src/judge.c $(SOURCES) -o bin/judge
 
+check: all
+	sh test/run-tests.sh
+
 clean:
 	rm -rf bin contest/tmp
 
-.PHONY: all clean
+.PHONY: all check clean

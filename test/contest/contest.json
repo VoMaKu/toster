@@ -1,0 +1,15 @@
+{
+  "sandbox": "auto",
+  "users": ["Alice", "Bob", "Carol", "Mallory"],
+  "languages": {
+    "c":   { "compile": "gcc {src} -o {bin} -lm", "run": "{bin}" },
+    "cpp": { "compile": "g++ -std=c++17 {src} -o {bin}", "run": "{bin}" },
+    "py":  { "run": "python3 {src}" }
+  },
+  "problems": [
+    { "letter": "A", "tests": 2, "checker": "checker_byte" },
+    { "letter": "B", "tests": 1, "checker": "checker_byte", "time": 1 },
+    { "letter": "C", "tests": 1, "checker": "checker_byte", "memory": 32 },
+    { "letter": "D", "tests": 2, "checker": "checkers/close_enough", "points": 50 }
+  ]
+}
