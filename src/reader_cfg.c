@@ -5,18 +5,18 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include "reader_cfg.h"
-#include <stdio.h>
-#include <stdlib.h>
 
-char *get_word(char *end, int fd) {
+/* A line splits at its first '=' only, so a value is free to hold more of
+   them — a compiler flag such as -std=c++17, say. */
+static char *get_word(char *end, int fd, int split_here) {
     char *word = NULL;
     int i = 0;
-    while(*end != '\n' && *end != '=') {
+    while(*end != '\n' && !(split_here && *end == '=')) {
         if(read(fd, end, 1) == 0) {
             *end = '|';
             break;
         }
-        if (*end == '=' || *end == '\n') {
+        if ((split_here && *end == '=') || *end == '\n') {
             break;
         }
         word = (char *)realloc(word, i + 2);
@@ -42,17 +42,22 @@ void free_cfgs(char ***cfgs) {
     free(cfgs);
 }
 
-char **get_list(char *end, int fd) {
+static char **get_list(char *end, int fd) {
     char **words = NULL;
     *end = '8';
     int i;
     for (i = 0; *end != '\n'; i++) {
-        words = (char **)realloc(words, (i + 2) * sizeof(char *));
-        if (words == NULL) {
+        char **grown = (char **)realloc(words, (i + 2) * sizeof(char *));
+        if (grown == NULL) { // assigning straight back to words would have lost the rows already read
             perror("realloc");
+            for (int j = 0; j < i; j++) {
+                free(words[j]);
+            }
+            free(words);
             return NULL;
         }
-        words[i] = get_word(end, fd);
+        words = grown;
+        words[i] = get_word(end, fd, i == 0);
         if (*end == '=') {
             *end = ' ';
         }
@@ -80,21 +85,24 @@ char ***get_cfgs(const char *path) {
     char  ***cfgs = NULL, end = '\0';
     int i = 0, fd = open(path, O_RDONLY);
     if (fd < 0) {
-        perror("file failed to open");
+        perror(path);
         return NULL;
     }
     while (end != '|') {
-        cfgs = (char ***)realloc(cfgs, (i + 2) * sizeof(char **));
-        if (cfgs == NULL) {
+        char ***grown = (char ***)realloc(cfgs, (i + 2) * sizeof(char **));
+        if (grown == NULL) {
             perror("realloc char***");
+            cfgs[i] = NULL;
+            free_cfgs(cfgs);
+            close(fd);
             return NULL;
         }
+        cfgs = grown;
         cfgs[i] = get_list(&end, fd);
         i++;
     }
-    if (cfgs[i] != NULL) {
-        cfgs[i] = NULL;
-    }
+    cfgs[i] = NULL; // unconditionally: the slot has never been written, so testing it first read uninitialised memory
+    close(fd);
     return cfgs;
 }
 /*
