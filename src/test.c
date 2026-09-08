@@ -140,8 +140,8 @@ static int spawn(char **argv, int in, int out, const char *cwd, int seconds, lon
 	}
 	child = pid;
 	killed = 0;
-	if (seconds > 0) { // armed after the fork: a wall clock backstop for a submission that blocks instead of computing
-		alarm(seconds + 1);
+	if (seconds > 0) { // armed after the fork, and generous: RLIMIT_CPU is the limit, this only catches a submission that blocks instead of computing
+		alarm(2 * seconds + 2);
 	}
 	int status;
 	waitpid(pid, &status, 0);
