@@ -8,356 +8,224 @@
 #include <sys/stat.h>
 #include <time.h>
 #include <fcntl.h>
-#include "reader_cfg.h"
+#include "config.h"
 
-char ***read_conf(char* where, char ***setting) {
-    DIR *_cfg = opendir(where);
-    if (_cfg == NULL) { // without this the readdir below dereferences a null directory handle
-        perror(where);
-        return NULL;
-    }
-    struct dirent *cfg = readdir(_cfg);
-	while(cfg != NULL){
-        if (strcmp(cfg -> d_name, "user.cfg") == 0
-           || strcmp(cfg -> d_name, "problem.cfg") == 0) {
-           	char *name = malloc(strlen(where) + 1 + strlen(cfg -> d_name) + 1);
-            sprintf(name, "%s/%s", where, cfg -> d_name);
-            setting = get_cfgs(name);
-            free(name);
-            break;
-        }
-        cfg = readdir(_cfg);
-    }
-	closedir(_cfg);
-	return setting;
+#define COLUMN 20 /* width of the name column in results.log */
+#define CELL 4    /* width of one problem's column */
+
+static void wr(int fd, const char *str) {
+	write(fd, str, strlen(str));
 }
 
-char *cfg_value(char ***cfg, int row) { // a blank or malformed line gives a short row, and its missing value would be read as a null pointer
-    if (cfg == NULL || cfg[row] == NULL || cfg[row][0] == NULL || cfg[row][1] == NULL) {
-        return NULL;
-    }
-    return cfg[row][1];
+static void wr_time(int fd) {
+	time_t now = time(NULL);
+	char *text = ctime(&now);
+	write(fd, text, strlen(text) - 1); // ctime ends in a newline of its own
 }
 
-char *usr_name(int users) {
-    DIR *path = opendir("../contest/code");
-    if (path == NULL) {
-        perror("DIR code doesn't exist");
-        return NULL;
-    }
-    struct dirent *user = NULL;
-    int i = -1;
-    while (i < users) { // count the submission directories only: ".", ".." and user.cfg are not students
-        user = readdir(path);
-        if (user == NULL) {
-            perror("DIR user doesn't exist");
-            closedir(path);
-            return NULL;
-        }
-        if (user -> d_name[0] == '.' || strcmp(user -> d_name, "user.cfg") == 0) {
-            continue;
-        }
-        i++;
-    }
-    char *name = malloc(strlen(user -> d_name) + 1); // + 1 for the terminator sprintf writes
-    sprintf(name, "%s", user -> d_name);
-    closedir(path);
-    return name;
+static void wr_cell(int fd, char mark) {
+	char cell[CELL];
+	memset(cell, ' ', CELL);
+	cell[0] = mark;
+	write(fd, cell, CELL);
 }
 
-char *make_fst_argv(char *users, int problems){
-	char *name = malloc(15 + 1 + strlen(users) + 1);
-	sprintf(name, "../contest/code/%s", users);
-	DIR *path = opendir(name);
-	struct dirent *problem = readdir(path);
-	if (problem == NULL) {
-		perror("Dir user doesn't exist");
-		free(name);
-		return NULL;
+/* One mark for a whole submission. A crash or a timeout outranks a wrong
+   answer, so that results.log can tell the two apart. */
+static char summarise(const char *marks, int count) {
+	if (count == 0) {
+		return 'X';
 	}
-	while (problem -> d_name[0] != 'A' + problems) {
-		problem = readdir(path);
-		if (problem == NULL) {
-			free(name);
-			char *tmp = malloc(1);
-			tmp[0] = '\0';
-			return tmp;
+	if (count == 1 && marks[0] == 'X') {
+		return 'X';
+	}
+	char mark = '+';
+	for (int i = 0; i < count; i++) {
+		if (marks[i] == 'x') {
+			return 'x';
+		}
+		if (marks[i] != '+') {
+			mark = '-';
 		}
 	}
-	name = realloc(name, strlen(name) + 1 + strlen(problem -> d_name) + 1);
-	sprintf(name, "../contest/code/%s/%s", users, problem -> d_name);
-	printf("%s\n", name);
-	return name;
+	return mark;
 }
 
-char *make_snd_argv(int problems){
-	char test = 'A' + problems;
-	char *name = malloc(19 * sizeof(char));	
-	sprintf(name, "../contest/tests/%c", test);
-	DIR *path = opendir(name);
-	if (path == NULL) {
-		perror("some of test A B C ... doesn't exist");
-		free(name);
+/* test lives next to the judge, whatever directory the judge was started
+   from. A judge found on PATH leaves the same search to execvp. */
+static char *runner_path(const char *argv0) {
+	const char *slash = strrchr(argv0, '/');
+	if (slash == NULL) {
+		return path_fmt("test");
+	}
+	return path_fmt("%.*stest", (int)(slash - argv0 + 1), argv0);
+}
+
+static char *run_one(Contest *contest, const char *runner, const char *student, char letter, int *count) {
+	*count = 0;
+	int pipe_fd[2];
+	if (pipe(pipe_fd) < 0) {
+		perror("pipe failed");
 		return NULL;
 	}
-	printf("%s\n", name);
-	return name;
-}
-
-int test(char ***setting, int user, int prob, int fd, int fd2) {
-    char *correct_usr = usr_name(user);
-    char tmp_log_wr[20];
-    memset(tmp_log_wr, 32, 20);
-    memcpy(tmp_log_wr, correct_usr, strlen(correct_usr));
-    write(fd, tmp_log_wr, 20);
-    if (correct_usr == NULL){
-        return -1;
-    }
-    for (int i = 0; i < prob; i++) {
-    	memset(tmp_log_wr, 32, 4);
-    	char *argv1 = make_fst_argv(correct_usr, i);
-    	if (argv1 == NULL) {
-    		return -1;
-    	}
-    	if (argv1[0] == '\0') {
-            tmp_log_wr[0] = 'X';
-            write(fd, tmp_log_wr, 4);
-            free(argv1);
-			continue;
-    	}
-    	char *argv2 = make_snd_argv(i);
-    	if (argv2 == NULL) {
-    		free(argv1);
-    		return -1;
-    	}
-        int pipe_fd[2];
-        pipe(pipe_fd);
-        pid_t pid;
-        if ((pid = fork()) == -1){
-            perror("fork failed");
-            free(argv1);
-            free(argv2);
-            return -1;
-        } else if (pid == 0) {
-            dup2(pipe_fd[1], 1);
-            close(pipe_fd[0]);
-            close(pipe_fd[1]);
-            close(fd);
-            if (execlp("./test", "./test", argv1, argv2, NULL)) {
-            	free(argv1);
-            	free(argv2);
-            	perror("exec failed : programm test is down");
-            	_exit(1);
-            }
-        } else {
-/*//        	int status;
-            close(pipe_fd[1]);
-        	wait(NULL);
-//        	if (WEXITSTATUS(status)) {
-//        		return 1;
-//        	}
-/*            long int ttime = time(NULL);
-            char *tttime = ctime(&ttime);
-            write(fd, tttime, sizeof(tttime));
-            write(fd, " start test\n", 12);*/
-           // wait(NULL);//wtf is this???
-/*            char *info = NULL, ch;
-            int i;
-            write(fd, tttime, sizeof(tttime));
-            write(fd, " user: ", 7);
-            write(fd, setting[user][1], sizeof(setting[user][1]));
-            write(fd, ", problem :", 11);
-            char pr = 'A' + prob;
-            write(fd, &pr, sizeof(char));
-            write(fd, ", tested :", 10);
-            write(fd, &i, sizeof(int));
-            for(i = 0; read(pipe_fd[0], &ch, 1) > 0; i++) {
-                info = (char *)realloc(info, i + 1);
-                info[i] = ch;
-            }
-            write(fd, "\n", 1);
-            ttime = time(NULL);
-            tttime = ctime(&ttime);
-            write(fd, tttime, sizeof(tttime));
-            write(fd, info, sizeof(info));
-            write(fd, "\n", 1);
-            ttime = time(NULL);
-            tttime = ctime(&ttime);
-            write(fd, tttime, sizeof(tttime));
-            int fail = 0, accept = 0;
-            for(int j = 0; j < i; j++) {
-                if(info[j] == 'x') {
-                    fail++;
-                } else {
-                    accept++;
-                }
-            }
-            write(fd, " accepted: ", 11);
-            write(fd, &accept, sizeof(int));
-            write(fd, ", failed: ", 10);
-            write(fd, &fail, sizeof(int));
-            write(fd, "\n", 1);
-            ttime = time(NULL);
-            tttime = ctime(&ttime);
-            write(fd, tttime, sizeof(tttime));
-            write(fd, " stop test", 10);*/
-/*            char flag = '+', answer = '+';
-            int done = read(pipe_fd[0], &flag, 1);
-        	if (flag == 'X'){
-        		answer = 'X';
-            } else {
-                while (done > 0 && flag != '\n') {
-                	if (flag != '+') {
-                		answer = '-';
-                		while (read(pipe_fd[0], &flag, 1) > 0);
-                		break;
-                	}
-                	done = read(pipe_fd[0], &flag, 1);
-                }
-            }
-            tmp_log_wr[0] = answer;
-            write(fd, tmp_log_wr, 4);
-            close(pipe_fd[0]);
-            free(argv1);
-            free(argv2);*/
-		// int status;
-			close(pipe_fd[1]);
-			// if (WEXITSTATUS(status)) {
-			// return 1;
-			// }
-			long int ttime = time(NULL);
-			char *tttime = ctime(&ttime);
-			write(fd2, tttime, strlen(tttime) - 1);
-			write(fd2, " start test\n", 12);
-			wait(NULL);
-			char *info = NULL;
-			int j = 0;
-			char flag = '+', answer = '+';
-			int done = read(pipe_fd[0], &flag, 1);
-			if (flag == 'X'){
-				info = (char *)realloc(info, j + 1);
-				info[j] = flag;
-				j++;
-				answer = 'X';
-			} else {
-				while (done > 0 && flag != '\n') {
-					info = (char *)realloc(info, j + 1);
-					info[j] = flag;
-					j++;
-					if (flag != '+') {
-						answer = '-';
-/*						while (read(pipe_fd[0], &flag, 1) > 0) {
-							info = (char *)realloc(info, i + 1);
-							info[i] = flag;
-							i++;							
-						}
-						break;*/
-					}
-					done = read(pipe_fd[0], &flag, 1);
-				}
-			}
-			if (j == 0) { // the runner said nothing at all — that is a missing result, not a pass
-				answer = 'X';
-			}
-			info = (char *)realloc(info, j + 1); // room for the terminator; also covers the case of no output at all, where info is still NULL
-			info[j] = '\0';
-			tmp_log_wr[0] = answer;
-			write(fd, tmp_log_wr, 4);
-			write(fd2, tttime, strlen(tttime) - 1);
-			write(fd2, " user: ", 7);
-			char *log_name = cfg_value(setting, user + 1); // user.cfg may be shorter than the number of submission directories
-			if (log_name == NULL) {
-				log_name = correct_usr;
-			}
-			write(fd2, log_name, strlen(log_name));
-			write(fd2, ", problem :", 11);
-			char pr = 'A' + i;
-			write(fd2, &pr, sizeof(char));
-			write(fd2, ", tested :", 10);
-			char ch = '0' + j;
-			write(fd2, &ch, sizeof(char));
-/*			for(i = 0; read(, &ch, 1) > 0; i++) {
-			info = (char *)realloc(info, i + 1);
-			info[i] = ch;
-			}*/
-			write(fd2, "\n", 1);
-			ttime = time(NULL);
-			tttime = ctime(&ttime);
-			write(fd2, tttime, strlen(tttime) - 1);
-			write(fd2, " ", 1);
-			write(fd2, info, strlen(info));
-			write(fd2, "\n", 1);
-			ttime = time(NULL);
-			tttime = ctime(&ttime);
-			write(fd2, tttime, strlen(tttime) - 1);
-			char fail = '0', accept = '0';
-			if (j > 1) {
-			for(int k = 0; k < j; k++) {
-				if(info[k] == 'x') {
-					fail++;
-				} else {
-					accept++;
-				}
-			}
-			write(fd2, " accepted: ", 11);
-			write(fd2, &accept, sizeof(char));
-			write(fd2, ", failed: ", 10);
-			write(fd2, &fail, sizeof(char));
-			write(fd2, "\n", 1);
-			} else {
-			write(fd2, "program doesn't exist\n", 22);
-			}
-			ttime = time(NULL);
-			tttime = ctime(&ttime);
-			write(fd2, tttime, strlen(tttime) - 1);
-			write(fd2, " stop test\n", 11);
-			close(pipe_fd[0]);
-			free(argv1);
-			free(argv2);
+	pid_t pid = fork();
+	if (pid < 0) {
+		perror("fork failed");
+		close(pipe_fd[0]);
+		close(pipe_fd[1]);
+		return NULL;
+	}
+	if (pid == 0) {
+		dup2(pipe_fd[1], 1);
+		close(pipe_fd[0]);
+		close(pipe_fd[1]);
+		char letter_text[2] = { letter, '\0' };
+		char *args[] = { (char *)runner, contest->dir, (char *)student, letter_text, NULL };
+		execvp(runner, args);
+		perror(runner);
+		_exit(1);
+	}
+	close(pipe_fd[1]);
+	char *marks = malloc(1);
+	char c;
+	while (marks != NULL && read(pipe_fd[0], &c, 1) > 0 && c != '\n') {
+		char *grown = realloc(marks, *count + 2);
+		if (grown == NULL) {
+			break;
 		}
-    }
-    free(correct_usr);
-    tmp_log_wr[0] = '\n';
-    write(fd, tmp_log_wr, 1);
-    return 0;
+		marks = grown;
+		marks[*count] = c;
+		(*count)++;
+	}
+	if (marks != NULL) {
+		marks[*count] = '\0';
+	}
+	close(pipe_fd[0]);
+	waitpid(pid, NULL, 0); // reaped only once the pipe is drained, so a long output cannot deadlock the pair
+	return marks;
 }
 
-int main(int argc, char** argv) {
-    char ***setting = NULL, ***problems = NULL;
-    setting = read_conf("../contest/code", setting);
-    problems = read_conf("../contest/tests", problems);
-    char *problem_count = cfg_value(problems, 0), *user_count = cfg_value(setting, 0);
-    if (problem_count == NULL || user_count == NULL) {
-        fprintf(stderr, "the first line of user.cfg or problem.cfg carries no count\n");
-        free_cfgs(setting);
-        free_cfgs(problems);
-        return -1;
-    }
-    int problem = atoi(problem_count), users = atoi(user_count);
-    int log = open("../contest/log/results.log", O_CREAT | O_WRONLY | O_TRUNC, 0644);
-    int log2 = open("../contest/log/results2.log", O_CREAT | O_WRONLY | O_TRUNC, 0644);
-    char tmp_log_wr[20] = "    users/problems  ";
-    write(log, tmp_log_wr, 20 * sizeof(char));
-    for (int i = 0; i < problem; i++) {
-        tmp_log_wr[0] = 'A' + i;
-        write(log, tmp_log_wr, sizeof(char) * 4);
-    }
-    tmp_log_wr[0] = '\n';
-    write(log, tmp_log_wr, 1);
-    for (int i = 0; i != users; i++) {
-        if (test(setting, i, problem, log, log2) == -1) {
-            char printerror[20] = "ERROR WITH usr/tests";
-            write(1, printerror, sizeof(char) * 20);
-            return -69;
-        }
-    }
-    close(log);
-    return 0;
+static void trace(int log2, const char *student, char letter, const char *marks, int count, char mark) {
+	char line[256];
+	wr_time(log2);
+	snprintf(line, sizeof(line), " user: %s, problem :%c, tested :%d\n", student, letter, count);
+	wr(log2, line);
+	wr_time(log2);
+	wr(log2, " ");
+	wr(log2, marks);
+	wr(log2, "\n");
+	wr_time(log2);
+	if (count == 0) {
+		wr(log2, " the runner produced no result\n");
+	} else if (mark == 'X') {
+		wr(log2, " not submitted or did not compile\n");
+	} else {
+		int accepted = 0, failed = 0;
+		for (int i = 0; i < count; i++) {
+			if (marks[i] == '+') { // only a pass is accepted: '-' is a wrong answer and 'x' a crash or a timeout
+				accepted++;
+			} else {
+				failed++;
+			}
+		}
+		snprintf(line, sizeof(line), " accepted: %d, failed: %d\n", accepted, failed);
+		wr(log2, line);
+	}
+	wr_time(log2);
+	wr(log2, " stop test\n");
 }
 
-/*struct dirent {
-       ulong_t  d_ino;                  inode number of entry
-       ushort_t d_reclen;               length of this record
-       ushort_t d_namlen;               length of string in d_name
-       char     d_name[MAXNAMLEN + 1];  maximum name length
-};*/
+static int run_user(Contest *contest, const char *runner, const char *student, int log, int log2) {
+	char column[COLUMN];
+	memset(column, ' ', COLUMN);
+	size_t len = strlen(student);
+	if (len > COLUMN) { // the column is a fixed width; a longer name would run off the end of the buffer
+		len = COLUMN;
+	}
+	memcpy(column, student, len);
+	write(log, column, COLUMN);
+
+	char *dir = contest_path(contest, "code/%s", student);
+	DIR *submitted = dir == NULL ? NULL : opendir(dir);
+	if (submitted == NULL) { // named in the configuration but absent from the disk: the whole row is X and the run carries on
+		perror(dir == NULL ? student : dir);
+		free(dir);
+		for (int i = 0; i < contest->problems_count; i++) {
+			wr_cell(log, 'X');
+		}
+		wr(log, "\n");
+		return 0;
+	}
+	closedir(submitted);
+	free(dir);
+
+	for (int i = 0; i < contest->problems_count; i++) {
+		char letter = contest->problems[i].letter;
+		wr_time(log2);
+		wr(log2, " start test\n");
+		int count = 0;
+		char *marks = run_one(contest, runner, student, letter, &count);
+		if (marks == NULL) {
+			return -1;
+		}
+		char mark = summarise(marks, count);
+		wr_cell(log, mark);
+		trace(log2, student, letter, marks, count, mark);
+		free(marks);
+	}
+	wr(log, "\n");
+	return 0;
+}
+
+int main(int argc, char **argv) {
+	if (argc > 2) {
+		fprintf(stderr, "usage: %s [contest directory]\n", argv[0]);
+		return -1;
+	}
+	Contest *contest = contest_load(argc == 2 ? argv[1] : "../contest");
+	if (contest == NULL) {
+		return -1;
+	}
+	char *runner = runner_path(argv[0]);
+	char *results = contest_path(contest, "log/results.log");
+	char *results2 = contest_path(contest, "log/results2.log");
+	int log = results == NULL ? -1 : open(results, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	int log2 = results2 == NULL ? -1 : open(results2, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	if (log < 0 || log2 < 0) { // without this the whole run writes into fd -1 and reports nothing at all
+		perror(log < 0 ? results : results2);
+		if (log >= 0) {
+			close(log);
+		}
+		if (log2 >= 0) {
+			close(log2);
+		}
+		free(results);
+		free(results2);
+		free(runner);
+		contest_free(contest);
+		return -1;
+	}
+	free(results);
+	free(results2);
+
+	char header[COLUMN];
+	memcpy(header, "    users/problems  ", COLUMN); // exactly the width of the name column, so it carries no terminator
+	write(log, header, COLUMN);
+	for (int i = 0; i < contest->problems_count; i++) {
+		wr_cell(log, contest->problems[i].letter);
+	}
+	wr(log, "\n");
+
+	int status = 0;
+	for (int i = 0; i < contest->users_count && status == 0; i++) {
+		status = run_user(contest, runner, contest->users[i], log, log2);
+	}
+	if (status != 0) {
+		fprintf(stderr, "the run stopped early\n");
+	}
+	close(log);
+	close(log2);
+	free(runner);
+	contest_free(contest);
+	return status;
+}
