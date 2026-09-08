@@ -74,6 +74,15 @@ printf '\nLanguages\n'
 fixture cfg
 ./bin/judge -j 0 "$work/contest" >/dev/null 2>"$work/err"
 results="$work/contest/log/results.log"
+# Everything below reads that scoreboard. If the judge would not mark the
+# contest at all, say so once and stop, rather than failing every check that
+# depends on it and leaving the reason in a file nobody printed.
+if [ ! -s "$results" ] || [ "$(wc -l < "$results")" -lt 5 ]; then
+	bad "the judge marks the small contest"
+	sed 's/^/        /' "$work/err" | head -5
+	printf '\n%d passed, %d failed, %d skipped\n\n' "$pass" "$fail" "$skip"
+	exit 1
+fi
 same "a submission in C"      + "$(mark "$results" Alice 0)"
 same "a submission in C++"    + "$(mark "$results" Bob 0)"
 same "a submission in Python" + "$(mark "$results" Carol 0)"
