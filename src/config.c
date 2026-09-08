@@ -3,11 +3,52 @@
 #include <stdarg.h>
 #include <string.h>
 #include <unistd.h>
+#include <limits.h>
 #include "config.h"
 #include "reader_cfg.h"
 #include "reader_json.h"
 
 static int contest_load_json(Contest *contest, const char *path);
+char *cfg_lookup(char ***cfg, const char *key);
+
+int sandbox_available(void) {
+	return access(SANDBOX_EXEC, X_OK) == 0;
+}
+
+static int read_sandbox_wish(const char *value, SandboxWish *wish) {
+	if (value == NULL || strcmp(value, "auto") == 0) {
+		*wish = SANDBOX_IF_AVAILABLE;
+	} else if (strcmp(value, "on") == 0) {
+		*wish = SANDBOX_REQUIRED;
+	} else if (strcmp(value, "off") == 0) {
+		*wish = SANDBOX_OFF;
+	} else {
+		fprintf(stderr, "sandbox= takes on, off or auto, not %s\n", value);
+		return -1;
+	}
+	return 0;
+}
+
+/* contest/contest.cfg holds what is true of the contest as a whole. It is
+   optional; without it every setting keeps its default. */
+static int load_settings(Contest *contest) {
+	char *path = contest_path(contest, "contest.cfg");
+	if (path == NULL) {
+		return -1;
+	}
+	if (access(path, R_OK) != 0) {
+		free(path);
+		return 0;
+	}
+	char ***cfg = get_cfgs(path);
+	free(path);
+	if (cfg == NULL) {
+		return -1;
+	}
+	int status = read_sandbox_wish(cfg_lookup(cfg, "sandbox"), &contest->sandbox);
+	free_cfgs(cfg);
+	return status;
+}
 
 char *path_fmt(const char *fmt, ...) {
 	va_list ap;
@@ -47,7 +88,7 @@ char *contest_path(Contest *contest, const char *fmt, ...) {
 	return out;
 }
 
-static char *cfg_lookup(char ***cfg, const char *key) { // the value of a key=value line, or NULL if the file has no such key
+char *cfg_lookup(char ***cfg, const char *key) { // the value of a key=value line, or NULL if the file has no such key
 	for (int i = 0; cfg != NULL && cfg[i] != NULL; i++) {
 		if (cfg[i][0] != NULL && cfg[i][1] != NULL && strcmp(cfg[i][0], key) == 0) {
 			return cfg[i][1];
@@ -310,8 +351,12 @@ Contest *contest_load(const char *dir) {
 		return NULL;
 	}
 	contest->dir = path_fmt("%s", dir);
-	if (contest->dir == NULL) {
-		free(contest);
+	contest->sandbox = SANDBOX_IF_AVAILABLE;
+	char resolved[PATH_MAX];
+	contest->root = realpath(dir, resolved) == NULL ? NULL : path_fmt("%s", resolved);
+	if (contest->dir == NULL || contest->root == NULL) {
+		perror(dir);
+		contest_free(contest);
 		return NULL;
 	}
 	char *json = contest_path(contest, "contest.json");
@@ -326,6 +371,9 @@ Contest *contest_load(const char *dir) {
 		}
 		if (status == 0) {
 			status = load_languages(contest);
+		}
+		if (status == 0) {
+			status = load_settings(contest);
 		}
 	}
 	free(json);
@@ -354,6 +402,7 @@ void contest_free(Contest *contest) {
 		argv_free(contest->languages[i].run);
 	}
 	free(contest->languages);
+	free(contest->root);
 	free(contest->dir);
 	free(contest);
 }
@@ -373,6 +422,10 @@ static int json_to_contest(Contest *contest, Json *root, const char *path) {
 	Json *users = json_get(root, "users");
 	Json *problems = json_get(root, "problems");
 	Json *languages = json_get(root, "languages");
+	Json *sandbox = json_get(root, "sandbox");
+	if (sandbox != NULL && read_sandbox_wish(json_string(sandbox), &contest->sandbox) != 0) {
+		return -1;
+	}
 	if (users == NULL || users->type != JSON_ARRAY) {
 		fprintf(stderr, "%s: \"users\" has to be an array of names\n", path);
 		return -1;

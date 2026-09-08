@@ -26,6 +26,51 @@ static void handler(int signo) { // the submission has been running for too long
 	}
 }
 
+/* Everything the submission is not handed here is denied it: reading the tests
+   it is being marked against, writing anywhere but its own scratch directory,
+   reaching the network, and forking. */
+static int write_profile(const char *path, const char *scratch, const char *tests) {
+	if (strpbrk(scratch, "\"\\") != NULL || strpbrk(tests, "\"\\") != NULL) {
+		fprintf(stderr, "a sandbox profile cannot carry a path with a quote or a backslash in it\n");
+		return -1;
+	}
+	FILE *file = fopen(path, "w");
+	if (file == NULL) {
+		perror(path);
+		return -1;
+	}
+	fprintf(file,
+		"(version 1)\n"
+		"(deny default)\n"
+		"(allow process-exec*)\n"
+		"(allow signal (target self))\n"
+		"(allow sysctl-read)\n"
+		"(allow mach-lookup)\n"
+		"(allow file-read*)\n"
+		"(deny file-read* (subpath \"%s\"))\n"
+		"(allow file-write* (subpath \"%s\"))\n",
+		tests, scratch);
+	return fclose(file) == 0 ? 0 : -1;
+}
+
+static char **sandbox_wrap(char **command, const char *profile) {
+	int count = 0;
+	while (command[count] != NULL) {
+		count++;
+	}
+	char **wrapped = calloc(count + 4, sizeof(char *));
+	if (wrapped == NULL) {
+		return NULL;
+	}
+	wrapped[0] = path_fmt("%s", SANDBOX_EXEC);
+	wrapped[1] = path_fmt("-f");
+	wrapped[2] = path_fmt("%s", profile);
+	for (int i = 0; i < count; i++) {
+		wrapped[3 + i] = path_fmt("%s", command[i]);
+	}
+	return wrapped;
+}
+
 /* Not every system enforces a limit on the address space: macOS gives
    RLIMIT_AS the number of RLIMIT_RSS and refuses to lower it. Asked once, so
    that a contest that wants a memory limit is told plainly it is not getting
@@ -56,13 +101,17 @@ static int memory_limit_works(long memory) {
 /* Runs argv to completion. in and out are redirected onto the child's stdin
    and stdout unless they are -1. seconds and memory are the limits the child
    is given; 0 means none. Returns 0 when the child exited with 0. */
-static int spawn(char **argv, int in, int out, int seconds, long memory) {
+static int spawn(char **argv, int in, int out, const char *cwd, int seconds, long memory) {
 	pid_t pid = fork();
 	if (pid < 0) {
 		perror("fork");
 		return -1;
 	}
 	if (pid == 0) {
+		if (cwd != NULL && chdir(cwd) != 0) { // a submission has no business in the directory the judge was started from
+			perror(cwd);
+			_exit(126);
+		}
 		if (in >= 0) {
 			dup2(in, 0);
 		}
@@ -76,8 +125,14 @@ static int spawn(char **argv, int in, int out, int seconds, long memory) {
 		if (memory > 0) {
 			struct rlimit space = { memory, memory };
 			setrlimit(RLIMIT_AS, &space);
+		}
+		if (seconds > 0) { // the submission, rather than a command of the judge's own
 			struct rlimit written = { 64L * 1024 * 1024, 64L * 1024 * 1024 };
 			setrlimit(RLIMIT_FSIZE, &written);
+			struct rlimit none = { 0, 0 };
+			setrlimit(RLIMIT_CORE, &none);
+			struct rlimit files = { 64, 64 };
+			setrlimit(RLIMIT_NOFILE, &files);
 		}
 		execvp(argv[0], argv);
 		perror(argv[0]);
@@ -198,14 +253,14 @@ static char check(Contest *contest, Problem *problem, char *in_path, char *out_p
 	}
 	char *path = contest_path(contest, "%s", problem->checker);
 	char *argv[] = { path, in_path, out_path, ans_path, NULL };
-	int refused = spawn(argv, -1, 2, 0, 0); // its stdout joins stderr: stdout here belongs to the marks
+	int refused = spawn(argv, -1, 2, NULL, 0, 0); // its stdout joins stderr: stdout here belongs to the marks
 	free(path);
 	return refused == 0 ? '+' : '-';
 }
 
 static char *find_source(Contest *contest, const char *student, char letter, Language **language) {
-	for (int i = 0; i < contest->languages_count; i++) {
-		char *path = contest_path(contest, "code/%s/%c.%s", student, letter, contest->languages[i].ext);
+	for (int i = 0; i < contest->languages_count; i++) { // absolute, because the submission runs from a directory of its own
+		char *path = path_fmt("%s/code/%s/%c.%s", contest->root, student, letter, contest->languages[i].ext);
 		if (path != NULL && access(path, R_OK) == 0) {
 			*language = &contest->languages[i];
 			return path;
@@ -251,21 +306,43 @@ int main(int argc, char **argv) {
 	}
 	free(log_path);
 
+	int confined = contest->sandbox != SANDBOX_OFF && sandbox_available();
+	if (contest->sandbox == SANDBOX_REQUIRED && !confined) {
+		fprintf(stderr, "the contest asks for a sandbox and this system has none\n");
+		contest_free(contest);
+		return -1;
+	}
+
 	Language *language = NULL;
 	char *src = find_source(contest, student, letter, &language);
-	char *bin = contest_path(contest, "tmp/%s_%c", student, letter);
+	char *bin = path_fmt("%s/tmp/%s_%c", contest->root, student, letter);
 	int built = src != NULL;
 	if (built && language->compile != NULL) {
 		char **command = argv_expand(language->compile, src, bin);
-		built = command != NULL && spawn(command, -1, 2, 0, 0) == 0;
+		built = command != NULL && spawn(command, -1, 2, NULL, 0, 0) == 0;
 		argv_free(command);
 	}
 	if (!built) { // nothing submitted, or nothing that builds
 		mark_write(log, 'X');
 	} else {
 		char **command = argv_expand(language->run, src, bin);
-		char *out_path = contest_path(contest, "tmp/%s_%c.out", student, letter);
+		char *scratch = path_fmt("%s/tmp/%s_%c.d", contest->root, student, letter);
+		mkdir(scratch, 0755); // the one place the submission is allowed to write
+		char *out_path = path_fmt("%s/output", scratch);
 		long memory = problem->memory > 0 && memory_limit_works(problem->memory) ? problem->memory : 0;
+		if (confined) {
+			char *profile = path_fmt("%s/profile.sb", scratch);
+			char *tests = path_fmt("%s/tests", contest->root);
+			char **wrapped = write_profile(profile, scratch, tests) == 0 ? sandbox_wrap(command, profile) : NULL;
+			free(profile);
+			free(tests);
+			if (wrapped == NULL) {
+				fprintf(stderr, "%s %c: the sandbox could not be set up\n", student, letter);
+				return -1;
+			}
+			argv_free(command);
+			command = wrapped;
+		}
 		for (int i = 1; i <= problem->tests; i++) {
 			char *in_path = contest_path(contest, "tests/%c/%03d.dat", letter, i);
 			char *ans_path = contest_path(contest, "tests/%c/%03d.ans", letter, i);
@@ -275,7 +352,7 @@ int main(int argc, char **argv) {
 			if (in < 0 || out < 0) { // a test that is not there is not a result the submission earned
 				perror(in < 0 ? in_path : out_path);
 				mark = 'x';
-			} else if (spawn(command, in, out, problem->seconds, memory) != 0) {
+			} else if (spawn(command, in, out, scratch, problem->seconds, memory) != 0) {
 				mark = 'x';
 			} else {
 				close(out);
@@ -294,6 +371,7 @@ int main(int argc, char **argv) {
 		}
 		unlink(out_path);
 		free(out_path);
+		free(scratch);
 		argv_free(command);
 	}
 	char newline = '\n';

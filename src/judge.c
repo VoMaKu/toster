@@ -186,6 +186,14 @@ int main(int argc, char **argv) {
 	if (contest == NULL) {
 		return -1;
 	}
+	if (contest->sandbox != SANDBOX_OFF && !sandbox_available()) { // said once here rather than by every runner in turn
+		if (contest->sandbox == SANDBOX_REQUIRED) {
+			fprintf(stderr, "the contest asks for a sandbox and this system has none\n");
+			contest_free(contest);
+			return -1;
+		}
+		fprintf(stderr, "this system has no sandbox: submissions run unconfined\n");
+	}
 	char *runner = runner_path(argv[0]);
 	char *results = contest_path(contest, "log/results.log");
 	char *results2 = contest_path(contest, "log/results2.log");

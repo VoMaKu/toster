@@ -18,8 +18,20 @@ typedef struct {
 	long memory;    /* bytes one test gets; 0 leaves memory unlimited */
 } Problem;
 
+#define SANDBOX_EXEC "/usr/bin/sandbox-exec"
+
+/* Whether a submission is confined while it runs. SANDBOX_REQUIRED stops a
+   run that cannot have one rather than quietly going without. */
+typedef enum {
+	SANDBOX_OFF,
+	SANDBOX_REQUIRED,
+	SANDBOX_IF_AVAILABLE
+} SandboxWish;
+
 typedef struct {
 	char *dir;      /* the contest directory every other path hangs off */
+	char *root;     /* the same directory, resolved, for the sandbox profile */
+	SandboxWish sandbox;
 	char **users;   /* NULL-terminated, in the order of the scoreboard */
 	int users_count;
 	Problem *problems;
@@ -32,6 +44,9 @@ typedef struct {
    Prints why and returns NULL when the contest cannot be read. */
 Contest *contest_load(const char *dir);
 void contest_free(Contest *contest);
+
+/* Whether this system can confine a submission at all. */
+int sandbox_available(void);
 
 Problem *contest_problem(Contest *contest, char letter);
 Language *contest_language(Contest *contest, const char *ext);
